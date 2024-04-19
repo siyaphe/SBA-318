@@ -17,7 +17,18 @@ app.use(logRequest);
 
 //-------------------------------------------- [desserts]
 const dessertsRoute = require('./routes/desserts');
+
 app.use('/desserts', dessertsRoute);
+
+let dessertsData = require('./data/desserts');
+app.post("/desserts", (req, res) => {
+    const newDessert = req.body;
+    dessertsData.push(newDessert);
+    res.json(newDessert);
+});
+
+//---------------------------------------[Post routes for data]
+
 
 // --------------------------------------------[foods]
 const foodsRoute = require('./routes/foods');
@@ -27,12 +38,29 @@ app.use('/foods', foodsRoute);
 const drinksRoute = require('./routes/drinks');
 app.use('/drinks', drinksRoute);
 
+
+
 //------------------------------------------------------------------------- [ROUTES]
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'server error' });
 });
 //--------------------------------------------------------------------------[Error handling middleware]
+
+app.put("/desserts/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const updatedDessert = req.body;
+    const index = dessertsData.findIndex(dessert => dessert.id === id);
+    if (index !== -1) {
+        dessertsData[index] = updatedDessert;
+        res.json(dessertsData[index]);
+    } else {
+        res.status(404).json({ error: 'Dessert not found' });
+    }
+});
+//---------------------------------------------[PUT request]
+
+
 app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
