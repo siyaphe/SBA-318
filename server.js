@@ -59,6 +59,19 @@ app.put("/desserts/:id", (req, res) => {
     }
 });
 //---------------------------------------------[PUT request]
+app.delete("/desserts/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+    const index = dessertsData.findIndex(dessert => dessert.id === id);
+    if (index !== -1) {
+        const deletedDessert = dessertsData.splice(index, 1);
+        res.json({ message: 'Dessert deleted successfully', deletedDessert });
+    } else {
+        res.status(404).json({ error: 'Dessert not found' });
+    }
+});
+
+
+//---------------------------------------------[Delete route]
 
 
 app.listen(PORT, () => {
