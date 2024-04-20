@@ -1,0 +1,74 @@
+import React, { useState, useEffect } from 'react';
+
+const Dessert = () => {
+    const [desserts, setDesserts] = useState([]);
+    const [newDessert, setNewDessert] = useState({ name: '', price: '' });
+
+    useEffect(() => {
+        fetch('/desserts')
+            .then(response => response.json())
+            .then(desserts => setDesserts(desserts))
+            .catch(error => console.error('Error fetching desserts:', error));
+    }, []);
+
+    const deleteDessert = id => {
+        fetch(`/desserts/${id}`, { method: 'DELETE' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to delete dessert');
+                }
+                setDesserts(desserts.filter(dessert => dessert.id !== id));
+            })
+            .catch(error => {
+                console.error('Error deleting dessert:', error);
+            });
+    };
+
+    const addDessert = event => {
+        event.preventDefault(); // Prevent default form submission
+
+        fetch('/desserts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newDessert)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add dessert');
+            }
+            setNewDessert({ name: '', price: '' }); // Clear the form after successful addition
+            fetchDesserts(); // Refresh the list to display the new dessert
+        })
+        .catch(error => {
+            console.error('Error adding dessert:', error);
+        });
+    };
+
+    return (
+        <div>
+            <h1>Desserts</h1>
+            <ul>
+                {desserts.map(dessert => (
+                    <li key={dessert.id}>
+                        {dessert.name} - ${dessert.price} 
+                        <button onClick={() => deleteDessert(dessert.id)}>Delete</button>
+                    </li>
+                ))}
+            </ul>
+            <form onSubmit={addDessert}>
+                <label htmlFor="name">Name:</label>
+                <input type="text" id="name" value={newDessert.name} onChange={e => setNewDessert({ ...newDessert, name: e.target.value })} required />
+                <br />
+                <label htmlFor="price">Price:</label>
+                <input type="number" id="price" value={newDessert.price} onChange={e => setNewDessert({ ...newDessert, price: e.target.value })} required />
+                <br />
+                <button type="submit">Add Dessert</button>
+            </form>
+        </div>
+    );
+};
+
+export default Dessert;
+

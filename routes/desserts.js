@@ -8,11 +8,14 @@ router.get('/:id', (req, res) => {
     if (!dessert) {
         return res.status(404).json({ error: 'Dessert not available' });
     }
-    res.json(dessert);
+     res.json(dessert);
+    
 });
 
 router.get('/', (req, res) => {
-    res.json(dessertsData);
+    res.json(dessertsData); 
 });
 
 module.exports = router;
+
+
